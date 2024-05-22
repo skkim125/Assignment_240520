@@ -9,8 +9,6 @@ import UIKit
 
 class EmotionDiaryViewController: UIViewController {
     
-    @IBOutlet var navigationTitle: UINavigationItem!
-    
     @IBOutlet var explainLabel: UILabel!
     
     @IBOutlet var emotionLabelList: [UILabel]!
@@ -22,18 +20,35 @@ class EmotionDiaryViewController: UIViewController {
     
     var values = [0,0,0,0,0,0,0,0,0]
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        makeUI()
+        
+        navigationBarUI()
+        makeAllUI()
     }
     
-    func makeUI() {
+    
+    func navigationBarUI() {
+        navigationItem.title = "감정 다이어리"
+        
+        let resetButton = UIBarButtonItem(title: "Reset", style: .plain, target: self, action: #selector(reset))
+        navigationItem.rightBarButtonItem = resetButton
+        navigationItem.rightBarButtonItem?.tintColor = .red
+    }
+    
+    @objc func reset() {
+        values = [0,0,0,0,0,0,0,0,0]
+        for v in 0...values.count-1 {
+            UserDefaults.standard.set(values[v], forKey: "\(emotions[v])")
+            emotionLabelList[v].text = "\(emotions[v]) \(values[v])"
+        }
+    }
+    
+    
+    func makeAllUI() {
         
         view.backgroundColor = .lightGray
         
-        navigationTitle.title = "감정 다이어리"
         makeExplainLabelUI(text: "오늘 느낀 감정을 클릭해주세요!")
         
         let imgArr = imgNameArr.map { str in
@@ -41,14 +56,21 @@ class EmotionDiaryViewController: UIViewController {
         }
         
         for i in 0...emotions.count-1 {
-            makeEmotionUI(button: emotionButtonList[i], image: imgArr[i], label: emotionLabelList[i], text: emotions[i])
+            let num = UserDefaults.standard.integer(forKey: "\(emotions[i])")
+            
+            makeEmotionButton(button: emotionButtonList[i], image: imgArr[i])
+            makeEmotionLabel(label: emotionLabelList[i], text: "\(emotions[i]) \(num)")
         }
     }
     
-    func makeEmotionUI(button: UIButton, image: UIImage, label: UILabel, text: String) {
-        button.setImage(image, for: .normal)
+    func makeEmotionLabel(label: UILabel, text: String) {
         label.text = text
         label.textAlignment = .center
+    }
+    
+    
+    func makeEmotionButton(button: UIButton, image: UIImage) {
+        button.setImage(image, for: .normal)
     }
     
     func makeExplainLabelUI(text: String) {
@@ -58,9 +80,17 @@ class EmotionDiaryViewController: UIViewController {
     }
     
     @IBAction func emotionTapped(_ sender: UIButton) {
-        print(sender.tag)
-        values[sender.tag] += 1
+        let tag = sender.tag
         
-        emotionLabelList[sender.tag].text = "\(emotions[sender.tag]) \(values[sender.tag])"
+        for v in 0...values.count-1 {
+            values[v] = UserDefaults.standard.integer(forKey: "\(emotions[tag])")
+        }
+        values[tag] += 1
+        
+        print(values[tag])
+
+        UserDefaults.standard.set(values[tag], forKey: "\(emotions[tag])")
+        
+        emotionLabelList[tag].text = "\(emotions[tag]) \(values[tag])"
     }
 }
