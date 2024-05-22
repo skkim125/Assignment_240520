@@ -70,7 +70,7 @@ class newWordSearcherViewController: UIViewController {
     // 검색 결과 UI
     func searchResultUI() {
         wordMeaningLabelImage.image = UIImage(named: "background")!.withRenderingMode(.alwaysOriginal)
-        wordMeaningLabelImage.contentMode = .scaleAspectFill
+        wordMeaningLabelImage.contentMode = .scaleToFill
         wordMeaningLabel.text = ""
         wordMeaningLabel.font = .systemFont(ofSize: 18)
         wordMeaningLabel.numberOfLines = 5
